@@ -19,34 +19,34 @@ osg::MatrixTransform* createTransformNode( osg::Drawable*
 createCar::createCar( const btVector3& carInitPos )
 {
 	initCar();
-	_carInitPos = carInitPos;
+	m_carInitPos = carInitPos;
 
 	osg::ref_ptr< osg::MatrixTransform > runningCar	=	createRunningCar();
 	osg::ref_ptr< osg::MatrixTransform > staticCar	=	createStaticCar();
-	osg::Vec3 postion =	osg::Vec3( _carPosition->getMatrix().getTrans().x(),
-		_carPosition->getMatrix().getTrans().y(),
-		_carPosition->getMatrix().getTrans().z()+10 );
+	osg::Vec3 postion =	osg::Vec3( m_carPosition->getMatrix().getTrans().x(),
+		m_carPosition->getMatrix().getTrans().y(),
+		m_carPosition->getMatrix().getTrans().z()+10 );
 
-	osg::ref_ptr< osg::Node > staticCarLabel = createNameLabel( _font, 15,
+	osg::ref_ptr< osg::Node > staticCarLabel = createNameLabel( m_font, 15,
 		"Static Car", postion );
-	osg::Node * runningCarLabel = createNameLabel( _font, 15,
+	osg::Node * runningCarLabel = createNameLabel( m_font, 15,
 		"Running Car", postion );
 
-	_carSwitchStateNode->addChild( runningCar, 0 );
-	_carSwitchStateNode->addChild( staticCar, 1 );
-	_carPosition->addChild( _carSwitchStateNode );
-	createRigidBody( _carPosition );
+	m_carSwitchStateNode->addChild( runningCar, 0 );
+	m_carSwitchStateNode->addChild( staticCar, 1 );
+	m_carPosition->addChild( m_carSwitchStateNode );
+	createRigidBody( m_carPosition );
 
 	//设置动画的话 则会不受碰撞和重力影响
 // 	osg::ref_ptr< osg::AnimationPathCallback > acpb = new osg::AnimationPathCallback;
 // 	acpb->setAnimationPath( carAnimationPath(osg::Vec3(0, 0, 0), osg::Vec3(0, 0, 5) ) );
-// 	_carPosition->setUpdateCallback( acpb );
-// 	osgbCollision::RefBulletObject< btRigidBody >* carRigid = new osgbCollision::RefBulletObject< btRigidBody >( _rbCar );//创建一个刚体盒子
-// 	_carPosition->setUserData( carRigid );
+// 	m_carPosition->setUpdateCallback( acpb );
+// 	osgbCollision::RefBulletObject< btRigidBody >* carRigid = new osgbCollision::RefBulletObject< btRigidBody >( m_rbCar );//创建一个刚体盒子
+// 	m_carPosition->setUserData( carRigid );
 // 	osgbDynamics::RigidBodyAnimation * rba = new osgbDynamics::RigidBodyAnimation;
 // 	acpb->setNestedCallback( rba );
 	//设置速度会有摩擦阻力
-//	_rbCar->setLinearVelocity(btVector3(15, 15,0));
+//	m_rbCar->setLinearVelocity(btVector3(15, 15,0));
 
 	//Adding labels after RigidBody to avoid the RigidLabel
 	runningCar->addChild( runningCarLabel );
@@ -55,58 +55,63 @@ createCar::createCar( const btVector3& carInitPos )
 
 void createCar::initCar( )
 {
-	_font = "fonts/arial.ttf";
+	m_font = "fonts/arial.ttf";
 	
-	_carSwitchStateNode =	new osg::Switch;
-	_carPosition	=	new osg::MatrixTransform;
-	_previousPos	= btVector3(0, 0, 0);
-	_currentPos		= btVector3(0, 0, 0);
-	_updateState	= true;
-	_offsetAngle	= 90;
-	_frameCount	= 0;
-	_FPS = 60;
+	m_carSwitchStateNode =	new osg::Switch;
+	m_carPosition	=	new osg::MatrixTransform;
+	m_previousPos	= btVector3(0, 0, 0);
+	m_currentPos		= btVector3(0, 0, 0);
+	m_updateState	= true;
+	m_offsetAngle	= 90;
+	m_frameCount	= 0;
+	m_FPS = 60;
 }
 
 void createCar::carTimer()
 {
-	_intervalTime = 5;/*Should be EndTime - BeginTime*/
+	m_intervalTime = 5;/*Should be EndTime - BeginTime*/
 }
 
 void createCar::calcHeadingAngle()
 {
-	if( _previousPos.x() == _nextPos.x() )
+	if( m_previousPos.x() == m_nextPos.x() )
 	{
-		if ( _nextPos.y() - _previousPos.y() > 0 )
+		if ( m_nextPos.y() - m_previousPos.y() > 0 )
 		{
-			_headingAngle = osg::PI_2;
+			m_headingAngle = osg::PI_2;
 		}
-		else if ( _nextPos.y() - _previousPos.y() < 0 )
+		else if ( m_nextPos.y() - m_previousPos.y() < 0 )
 		{
-			_headingAngle = -osg::PI_2;
+			m_headingAngle = -osg::PI_2;
 		}
 	}
-	else if( _previousPos.y() == _nextPos.y())
+	else if( m_previousPos.y() == m_nextPos.y())
 	{
-		if( _nextPos.x() - _previousPos.x() > 0)
+		if( m_nextPos.x() - m_previousPos.x() > 0)
 		{
-			_headingAngle == 0;
+			m_headingAngle == 0;
 		}
-		else if( _nextPos.x() - _previousPos.x() < 0)
+		else if( m_nextPos.x() - m_previousPos.x() < 0)
 		{
-			_headingAngle = osg::PI;
+			m_headingAngle = osg::PI;
 		}
 	}
-	else if(_nextPos.x() - _previousPos.x() > 0)
+	else if(_nextPos.x() - m_previousPos.x() > 0)
 	{
-		_headingAngle = btAtan(( _currentPos.y() - _previousPos.y() ) / (_currentPos.x() - _previousPos.x()));
+		m_headingAngle = btAtan(( m_currentPos.y() - m_previousPos.y() ) / ( m_currentPos.x() - m_previousPos.x()));
 	}
 	else
 	{
-		_headingAngle = osg::PI + btAtan(( _currentPos.y() - _previousPos.y() ) / (_currentPos.x() - _previousPos.x()));
+		m_headingAngle = osg::PI + btAtan(( m_currentPos.y() - m_previousPos.y() ) / ( m_currentPos.x() - m_previousPos.x()));
 	}
 
-	_headingAngle = osg::RadiansToDegrees( _headingAngle ) + _offsetAngle;
-	_headingAngle = osg::DegreesToRadians( _headingAngle );
+	m_headingAngle = osg::RadiansToDegrees( m_headingAngle ) + m_offsetAngle;
+	m_headingAngle = osg::DegreesToRadians( m_headingAngle );
+}
+
+void createCar::calcStep()
+{
+
 }
 
 createCar::~createCar(void)
@@ -277,16 +282,16 @@ void createCar::createRigidBody( osg::MatrixTransform* mainBody)
 	/*  BULLET CODE */
 	btTransform bodyTransform;
 	bodyTransform.setIdentity();//
-	bodyTransform.setOrigin( _carInitPos );//Position where the car show out
+	bodyTransform.setOrigin( m_carInitPos );//Position where the car show out
 	motion->setWorldTransform( bodyTransform );
 
 	btScalar mass( 500000.0f );//
 	btVector3 inertia;//
 	collision->calculateLocalInertia( mass, inertia );//
 	btRigidBody::btRigidBodyConstructionInfo rbinfo( mass, motion, collision, inertia );//
-	_rbCar = new btRigidBody( rbinfo );
-	//_rbCar->setCollisionFlags( _rbCar->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT );//去掉动力学才有用，为什么？
-	_rbCar->setActivationState( DISABLE_DEACTIVATION );
+	m_rbCar = new btRigidBody( rbinfo );
+	//_rbCar->setCollisionFlags( m_rbCar->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT );//去掉动力学才有用，为什么？
+	m_rbCar->setActivationState( DISABLE_DEACTIVATION );
 }
 
 
@@ -316,34 +321,34 @@ osg::Node* createCar::createNameLabel( const std::string& textFont,
 // Begin Get Methods //
 osg::MatrixTransform* createCar::getPosition()
 {
-	return _carPosition.release();
+	return m_carPosition.release();
 }
 
 osg::Switch* createCar::getSwitchNode()
 {
-	return _carSwitchStateNode.release();
+	return m_carSwitchStateNode.release();
 }
 
 btRigidBody* createCar::getRigidCar()
 {
-	return _rbCar;
+	return m_rbCar;
 }
 
 btTransform	createCar::getCarTransform()
 {
-	_carMotionState = _rbCar->getMotionState();
-	_carMotionState->getWorldTransform( _carTransform );
-	return _carTransform;
+	m_carMotionState = m_rbCar->getMotionState();
+	m_carMotionState->getWorldTransform( m_carTransform );
+	return m_carTransform;
 }
 
 btVector3 createCar::getCurrentPos()
 {
-	return _currentPos;
+	return m_currentPos;
 }
 
 btVector3 createCar::getPreviousPos()
 {
-	return _previousPos;
+	return m_previousPos;
 }
 
 // End Get Methods //
@@ -353,19 +358,19 @@ bool createCar::setFont(const std::string& font)
 {
 	if( font.empty() )
 	{
-		_font = font;
+		m_font = font;
 		return true;
 	}
 	else
 	{
-		_font = "fonts/arial.ttf";
+		m_font = "fonts/arial.ttf";
 		return false;
 	}
 }
 
 // bool createCar::setCarInitPos(const btVector3& initPos)
 // {
-// // 	if( _carInitPos = initPos )
+// // 	if( m_carInitPos = initPos )
 // // 	{
 // // 		return true;
 // // 	}
@@ -373,90 +378,120 @@ bool createCar::setFont(const std::string& font)
 // // 	{
 // // 		return false;
 // // 	}
-// 	_carInitPos = initPos;
-// 	_previousPos = _carInitPos;
+// 	m_carInitPos = initPos;
+// 	m_previousPos = m_carInitPos;
 // 	return true;
 // }
 
-bool createCar::setCurrentPos(const btVector3& currentPos)//TODO0.1
+void createCar::setCurrentPos(const btVector3& currentPos)//TODO0.1
 {
-	_carMotionState = _rbCar->getMotionState();
-	_carMotionState->getWorldTransform( _carTransform );
+	m_carMotionState = m_rbCar->getMotionState();
+	m_carMotionState->getWorldTransform( m_carTransform );
 
-	if( _updateState )
+	if( m_updateState )
 	{
 		carTimer();		
-		_currentPos	= currentPos;
+		m_currentPos	= currentPos;
 		calcHeadingAngle();
-		_frameCount = _FPS * _intervalTime;	//FPS is 60.
-		_tempFrameCount = _frameCount;		
-		_updateState = false;
+		m_frameCount = m_FPS * m_intervalTime;	//FPS is 60.
+		m_tempFrameCount = m_frameCount;		
+		m_updateState = false;
 	}
 	else
 	{
-		_frameCount--;
+		m_frameCount--;
 
-		if( _previousPos == _currentPos )
+		if( m_previousPos == m_currentPos )
 		{
-			_carSwitchStateNode->setValue( 0, false );
-			_carSwitchStateNode->setValue( 1, true );//Show Static One
+			m_carSwitchStateNode->setValue( 0, false );
+			m_carSwitchStateNode->setValue( 1, true );//Show Static One
 		}
 		else
 		{
-			_carSwitchStateNode->setValue( 0, true );
-			_carSwitchStateNode->setValue( 1, false );//Show the Running One
+			m_carSwitchStateNode->setValue( 0, true );
+			m_carSwitchStateNode->setValue( 1, false );//Show the Running One
 
-			btTransform tempTransform = _carTransform;
+			btTransform tempTransform = m_carTransform;
 			btVector3	tempPos = btVector3( tempTransform.getOrigin().x(),
 				tempTransform.getOrigin().y(), tempTransform.getOrigin().z() );
-			float stepX = ( _currentPos.x() - _previousPos.x() ) / _tempFrameCount;
-			float stepY = ( _currentPos.y() - _previousPos.y() ) / _tempFrameCount;
+			float stepX = ( m_currentPos.x() - m_previousPos.x() ) / m_tempFrameCount;
+			float stepY = ( m_currentPos.y() - m_previousPos.y() ) / m_tempFrameCount;
 			
-			_carRotation =  btQuaternion( btVector3( 0, 0, 1), _headingAngle);
-			_carTransform.setRotation( _carRotation );
-			_carMotionState->setWorldTransform( _carTransform );
-			_rbCar->setMotionState( _carMotionState );
+			m_carRotation =  btQuaternion( btVector3( 0, 0, 1), m_headingAngle);
+			m_carTransform.setRotation( m_carRotation );
+			m_carMotionState->setWorldTransform( m_carTransform );
+			m_rbCar->setMotionState( m_carMotionState );
 
-			_carTransform.setOrigin( btVector3( tempTransform.getOrigin().x() + stepX,
+			m_carTransform.setOrigin( btVector3( tempTransform.getOrigin().x() + stepX,
 				tempTransform.getOrigin().y() + stepY, tempTransform.getOrigin().z() ) );
-			_carMotionState->setWorldTransform( _carTransform );
-			_rbCar->setMotionState( _carMotionState );
+			m_carMotionState->setWorldTransform( m_carTransform );
+			m_rbCar->setMotionState( m_carMotionState );
 		}
-		if( _frameCount == 0 )
+		if( m_frameCount == 0 )
 		{
-			_previousPos = _currentPos;
-			_updateState = true;
+			m_previousPos = m_currentPos;
+			m_updateState = true;
 		}
 	}
-	return true;
 }
 
-void createCar::setPreviousPos(const btVector3& previousPos)//TODO
+void createCar::setPreviousPos(const btVector3& previousPos)
 {
-	_previousPos = previousPos;
+	m_previousPos = previousPos;
 }
 
-bool createCar::setNextPos(const btVector3& nextPos)//TODO
+void createCar::setNextPos(const btVector3& nextPos)//TODO
 {
-	if( _updateState )
+	if( m_updateState )
 	{
-		carTimer();		
-		
+		carTimer();			
 		calcHeadingAngle();
-		_frameCount = _FPS * _intervalTime;	//FPS is 60.
-		_tempFrameCount = _frameCount;		
-		_updateState = false;
+		m_frameCount = m_FPS * m_intervalTime;	//FPS is 60.
+		m_tempFrameCount = m_frameCount;		
+		m_updateState = false;
 	}
 	else
 	{
-		if(_frameCount == 0)
+		m_frameCount--;
+
+		if( m_previousPos == m_nextPos )
 		{
-			setPreviousPos(_nextPos);
-			_nextPos = nextPos;
-			_updateState = true;
+			m_carSwitchStateNode->setValue( 0, false );
+			m_carSwitchStateNode->setValue( 1, true );//Show Static One
+
+			m_carRotation =  btQuaternion( btVector3( 0, 0, 1), m_headingAngle);
+			m_carTransform.setRotation( m_carRotation );
+			m_carMotionState->setWorldTransform( m_carTransform );
+			m_rbCar->setMotionState( m_carMotionState );
 		}
+		else
+		{
+			m_carSwitchStateNode->setValue( 0, true );
+			m_carSwitchStateNode->setValue( 1, false );//Show the Running One
+
+			btTransform tempTransform = m_carTransform;
+			btVector3	tempPos = btVector3( tempTransform.getOrigin().x(),
+				tempTransform.getOrigin().y(), tempTransform.getOrigin().z() );
+			float stepX = ( m_currentPos.x() - m_previousPos.x() ) / m_tempFrameCount;
+			float stepY = ( m_currentPos.y() - m_previousPos.y() ) / m_tempFrameCount;
+
+			m_carRotation =  btQuaternion( btVector3( 0, 0, 1), m_headingAngle);
+			m_carTransform.setRotation( m_carRotation );
+			m_carMotionState->setWorldTransform( m_carTransform );
+			m_rbCar->setMotionState( m_carMotionState );
+
+			m_carTransform.setOrigin( btVector3( tempTransform.getOrigin().x() + stepX,
+				tempTransform.getOrigin().y() + stepY, tempTransform.getOrigin().z() ) );
+			m_carMotionState->setWorldTransform( m_carTransform );
+			m_rbCar->setMotionState( m_carMotionState );
 	}
-	
+	if(m_frameCount == 0)
+	{
+		setPreviousPos(m_nextPos);
+		m_nextPos = nextPos;
+		calcStep();
+		m_updateState = true;
+	}
 
 }
 

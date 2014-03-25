@@ -40,37 +40,41 @@ public:
 
 	bool	setFont(const std::string& font);
 	//bool	setCarInitPos(const btVector3& initPos);
-	bool	setCurrentPos(const btVector3& currentPos);
-	bool	setNextPos(const btVector3& nextPos);	//for next position
+	void	setCurrentPos(const btVector3& currentPos);
+	void	setNextPos(const btVector3& nextPos);	//for next position
 	void	setPreviousPos(const btVector3& previousPos);	//for prev position
 	//osg::AnimationPath*		carAnimationPath(osg::Vec3f& beginPoint, osg::Vec3f& endPoint);
 private:
-	bool	_updateState;	//更新状态
-	float	_offsetAngle;	//模型默认补偿角 调整到X轴正向
-	float	_headingAngle;	//从正向开始算的朝向
-	unsigned int	_frameCount;
-	unsigned int	_tempFrameCount;
-	unsigned int	_intervalTime;
-	unsigned int	_FPS;
+	bool	m_updateState;	//更新状态
+	float	m_offsetAngle;	//模型默认补偿角 调整到X轴正向
+	float	m_headingAngle;	//从正向开始算的朝向
+	unsigned int	m_frameCount;
+	unsigned int	m_tempFrameCount;
+	unsigned int	m_intervalTime;
+	unsigned int	m_FPS;
 	
-	std::string _font;
-	btRigidBody* _rbCar;
+	std::string m_font;
+	btRigidBody* m_rbCar;
 
-	btVector3 _carInitPos;
-	btVector3 _nextPos;
-	btVector3 _currentPos;
-	btVector3 _previousPos;
-	btVector3 _tempPos;
+	btVector3 m_carInitPos;
+	btVector3 m_nextPos;
+	btVector3 m_currentPos;
+	btVector3 m_previousPos;
+	btVector3 m_tempPos;
 
-	btTransform _carTransform;
-	btQuaternion _carRotation;
-	btMotionState* _carMotionState;
+	btScalar m_stepX;
+	btScalar m_stepY;
 
- 	osg::ref_ptr< osg::Switch > _carSwitchStateNode;
- 	osg::ref_ptr< osg::MatrixTransform > _carPosition;
+	btTransform m_carTransform;
+	btQuaternion m_carRotation;
+	btMotionState* m_carMotionState;
+
+ 	osg::ref_ptr< osg::Switch > m_carSwitchStateNode;
+ 	osg::ref_ptr< osg::MatrixTransform > m_carPosition;
 
 	void initCar();
 	void carTimer();
 	void calcHeadingAngle();
+	void calcStep();//TO DO
 };
 
