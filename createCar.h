@@ -41,8 +41,8 @@ public:
 	bool	setFont(const std::string& font);
 	//bool	setCarInitPos(const btVector3& initPos);
 	bool	setCurrentPos(const btVector3& currentPos);
-	bool	setNextPos(const btVector3& nextPos);
-	bool	setPreviousPos(const btVector3& previousPos);
+	bool	setNextPos(const btVector3& nextPos);	//for next position
+	void	setPreviousPos(const btVector3& previousPos);	//for prev position
 	//osg::AnimationPath*		carAnimationPath(osg::Vec3f& beginPoint, osg::Vec3f& endPoint);
 private:
 	bool	_updateState;	//¸üÐÂ×´Ì¬

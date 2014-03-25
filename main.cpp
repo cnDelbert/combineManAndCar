@@ -276,8 +276,8 @@ int main()
 		dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
 		prevSimTime = currSimTime;		
 
-		car.setCurrentPos( loadCarData1( i ) );
-		car2.setCurrentPos( loadCarData2( i ) );
+// 		car.setCurrentPos( loadCarData1( i ) );
+// 		car2.setCurrentPos( loadCarData2( i ) );//TO DO Change method to setNextPos
 		man->setNextPos( loadManData1(i));
 		man->updateTrans();
 		i++;

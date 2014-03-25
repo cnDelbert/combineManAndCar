@@ -74,21 +74,37 @@ void createCar::carTimer()
 
 void createCar::calcHeadingAngle()
 {
-	if( _previousPos.x() == _currentPos.x() )
+	if( _previousPos.x() == _nextPos.x() )
 	{
-		if ( _currentPos.y() - _previousPos.y() > 0 )
+		if ( _nextPos.y() - _previousPos.y() > 0 )
 		{
 			_headingAngle = osg::PI_2;
 		}
-		else if ( _currentPos.y() - _previousPos.y() < 0 )
+		else if ( _nextPos.y() - _previousPos.y() < 0 )
 		{
 			_headingAngle = -osg::PI_2;
 		}
 	}
+	else if( _previousPos.y() == _nextPos.y())
+	{
+		if( _nextPos.x() - _previousPos.x() > 0)
+		{
+			_headingAngle == 0;
+		}
+		else if( _nextPos.x() - _previousPos.x() < 0)
+		{
+			_headingAngle = osg::PI;
+		}
+	}
+	else if(_nextPos.x() - _previousPos.x() > 0)
+	{
+		_headingAngle = btAtan(( _currentPos.y() - _previousPos.y() ) / (_currentPos.x() - _previousPos.x()));
+	}
 	else
 	{
-		_headingAngle = atan(( _currentPos.y() - _previousPos.y() ) / (_currentPos.x() - _previousPos.x()));
+		_headingAngle = osg::PI + btAtan(( _currentPos.y() - _previousPos.y() ) / (_currentPos.x() - _previousPos.x()));
 	}
+
 	_headingAngle = osg::RadiansToDegrees( _headingAngle ) + _offsetAngle;
 	_headingAngle = osg::DegreesToRadians( _headingAngle );
 }
@@ -362,7 +378,7 @@ bool createCar::setFont(const std::string& font)
 // 	return true;
 // }
 
-bool createCar::setCurrentPos(const btVector3& currentPos)
+bool createCar::setCurrentPos(const btVector3& currentPos)//TODO0.1
 {
 	_carMotionState = _rbCar->getMotionState();
 	_carMotionState->getWorldTransform( _carTransform );
@@ -372,7 +388,7 @@ bool createCar::setCurrentPos(const btVector3& currentPos)
 		carTimer();		
 		_currentPos	= currentPos;
 		calcHeadingAngle();
-		_frameCount = _FPS * _intervalTime;	//60 is FPS
+		_frameCount = _FPS * _intervalTime;	//FPS is 60.
 		_tempFrameCount = _frameCount;		
 		_updateState = false;
 	}
@@ -414,39 +430,34 @@ bool createCar::setCurrentPos(const btVector3& currentPos)
 	}
 	return true;
 }
-// End Set Methods //
 
-//osg::AnimationPath*	 createCar::carAnimationPath(osg::Vec3f& beginPoint, osg::Vec3f& endPoint)
-//{
-//	if((beginPoint.x() == endPoint.x()) && (beginPoint.y() == endPoint.y()))
-//	{
-//	
-//	}
-//	else
-//	{
-//		osg::ref_ptr< osg::AnimationPath > path = new osg::AnimationPath;
-//		float beginTime = beginPoint.z();
-//		float endTime	= endPoint.z();
-//		unsigned int numberSamples = 32;
-//		 _offsetAngle = 90;
-//		btTransform rbTransform;
-//		btMotionState* carMotionState;
-//		carMotionState	= _rbCar->getMotionState();
-//		carMotionState->getWorldTransform( rbTransform );
-//		float deltaTime = (endPoint.z() - beginPoint.z()) / numberSamples;
-//		_headingAngle = osg::DegreesToRadians( _offsetAngle ) + std::atan( (endPoint.y() - beginPoint.y())
-//			/ (endPoint.x() - beginPoint.x()));
-//
-//		for( unsigned int i = 0;
-//			i < numberSamples; ++i )
-//		{
-//			osg::Vec3 pos( beginPoint.x() + i * (endPoint.x() - beginPoint.x()) / numberSamples,
-//				beginPoint.y() + i * (endPoint.y() - beginPoint.y()) / numberSamples,
-//				rbTransform.getOrigin().z());
-//			osg::Quat rot( _headingAngle, osg::Z_AXIS );
-//			path->insert(deltaTime*i, osg::AnimationPath::ControlPoint(pos, rot));
-//		}
-//
-//		return path.release();
-//	}
-//}
+void createCar::setPreviousPos(const btVector3& previousPos)//TODO
+{
+	_previousPos = previousPos;
+}
+
+bool createCar::setNextPos(const btVector3& nextPos)//TODO
+{
+	if( _updateState )
+	{
+		carTimer();		
+		
+		calcHeadingAngle();
+		_frameCount = _FPS * _intervalTime;	//FPS is 60.
+		_tempFrameCount = _frameCount;		
+		_updateState = false;
+	}
+	else
+	{
+		if(_frameCount == 0)
+		{
+			setPreviousPos(_nextPos);
+			_nextPos = nextPos;
+			_updateState = true;
+		}
+	}
+	
+
+}
+
+/* End Set Methods */
