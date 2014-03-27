@@ -39,10 +39,9 @@ public:
 	btVector3	getPreviousPos();
 
 	bool	setFont(const std::string& font);
-	//bool	setCarInitPos(const btVector3& initPos);
-	bool	setCurrentPos(const btVector3& currentPos);
-	//bool	setPreviousPos(const btVector3& previousPos);
-	//osg::AnimationPath*		carAnimationPath(osg::Vec3f& beginPoint, osg::Vec3f& endPoint);
+	void	setCurrentPos(/*const btVector3& currentPos*/);
+	void	setNextPos(const btVector3& nextPos);	//for next position
+	void	setPreviousPos(const btVector3& previousPos);	//for prev position
 private:
 	bool	m_updateState;	//更新状态
 	float	m_offsetAngle;	//模型默认补偿角 调整到X轴正向

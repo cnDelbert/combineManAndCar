@@ -196,8 +196,8 @@ int main(int argc, char* argv[])
 		dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
 		prevSimTime = currSimTime;
 
-		car.setCurrentPos( loadCarData1( i ) );
-		car2.setCurrentPos( loadCarData2( i ) );
+		car.setNextPos( loadCarData1( i ) );
+		car2.setNextPos( loadCarData2( i ) );
 		i++;
 		viewer.frame();
 		
