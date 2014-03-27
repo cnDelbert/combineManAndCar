@@ -20,7 +20,7 @@ class createCar :
 	public osg::Node
 {
 public:
-	createCar( const btVector3& carInitPos = btVector3( 0, 0, 2));
+	createCar(btDynamicsWorld* dynamicsWorld, const btVector3& carInitPos = btVector3( 0, 0, 2));
 	~createCar(void);
 
 	osg::AnimationPathCallback*	createWheelAnimation(const osg::Vec3& base);
@@ -40,9 +40,8 @@ public:
 
 	bool	setFont(const std::string& font);
 	//bool	setCarInitPos(const btVector3& initPos);
-	void	setCurrentPos(const btVector3& currentPos);
-	void	setNextPos(const btVector3& nextPos);	//for next position
-	void	setPreviousPos(const btVector3& previousPos);	//for prev position
+	bool	setCurrentPos(const btVector3& currentPos);
+	//bool	setPreviousPos(const btVector3& previousPos);
 	//osg::AnimationPath*		carAnimationPath(osg::Vec3f& beginPoint, osg::Vec3f& endPoint);
 private:
 	bool	m_updateState;	//¸üÐÂ×´Ì¬
@@ -68,6 +67,7 @@ private:
 	btTransform m_carTransform;
 	btQuaternion m_carRotation;
 	btMotionState* m_carMotionState;
+	btDynamicsWorld* m_dynamicsWorld;
 
  	osg::ref_ptr< osg::Switch > m_carSwitchStateNode;
  	osg::ref_ptr< osg::MatrixTransform > m_carPosition;

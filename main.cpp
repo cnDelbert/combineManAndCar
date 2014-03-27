@@ -1,30 +1,20 @@
+//解决 vector 问题
+//解决 heading 问题
+//解决 initPos 问题
+//删除carSwitchController即可
+// 20140112
+#include <osgViewer/Viewer>
+#include <osg/MatrixTransform>
+#include <osgDB/ReadFile>
+#include <osgGA/TrackballManipulator>
+
+//#include "carSwitchController.h"
+#include "createCar.h"
 
 #include <btBulletDynamicsCommon.h>
 
-#include <osgbDynamics/RigidBody.h>
-#include <osgbDynamics/MotionState.h>
-#include <osgbCollision/CollisionShapes.h>
-#include <osgbCollision/RefBulletObject.h>
-
-#include <osgDB/ReadFile>
-#include <osgGA/TrackballManipulator>
-#include <osgGA/GUIEventAdapter>
-#include <osg/ShapeDrawable>
-#include <osgViewer/Viewer>
-#include <osg/LineSegment>
-#include <osgUtil/IntersectVisitor>
-
-#include "Character.h"
-#include "manController.h"
-#include "createCar.h"
-
 #include <vector>
-#include <iostream>
 using namespace std;
-
-class Character;
-class createCar;
-class manController;
 
 template <typename T>
 struct wrapper : public T
@@ -33,86 +23,27 @@ struct wrapper : public T
 	wrapper(const T& rhs) : T(rhs) {}
 };//解决 vector C2719 问题
 
-btVector3 loadCarData1(const int i )//位置数据
-{
-	vector< wrapper<btVector3> > carPos;
-	carPos.push_back( btVector3( 10, 20, 0) );
-	carPos.push_back( btVector3( 20, 40, 0) );
-	carPos.push_back( btVector3( 30, 50, 0) );
-	carPos.push_back( btVector3( 40, 60, 0) );
-	carPos.push_back( btVector3( 50, 50, 0) );
-	carPos.push_back( btVector3( 60, 30, 0) );
-	carPos.push_back( btVector3( 70, 40, 0) );
-	carPos.push_back( btVector3( 80, 40, 0) );
-	carPos.push_back( btVector3( 90, 50, 0) );
-	carPos.push_back( btVector3( 100, 70, 0) );
-	carPos.push_back( btVector3( 110, 60, 0) );
-	carPos.push_back( btVector3( 120, 70, 0) );
-	carPos.push_back( btVector3( 130, 80, 0) );
-	carPos.push_back( btVector3( 140, 90, 0) );
-	carPos.push_back( btVector3( 150, 100, 0) );
-	carPos.push_back( btVector3( 160, 90, 0) );
-	carPos.push_back( btVector3( 170, 100, 0) );
-	carPos.push_back( btVector3( 180, 100, 0) );
-	carPos.push_back( btVector3( 190, 90, 0) );
-	carPos.push_back( btVector3( 200, 90, 0) );
-	carPos.push_back( btVector3( 210, 90, 0) );
-	carPos.push_back( btVector3( 220, 100, 0) );
-	carPos.push_back( btVector3( 230, 100, 0) );
-	carPos.push_back( btVector3( 240, 100, 0) );
-	int j = i/300;
-	if( j < carPos.size())
-		return carPos[j];
-	else
-		return btVector3( 0, 0, 0);
-}
-btVector3 loadCarData2(const int i )//位置数据
-{
-	vector< wrapper<btVector3> > carPos;
-	carPos.push_back( btVector3( 10, 70, 0) );
-	carPos.push_back( btVector3( 20, 80, 0) );
-	carPos.push_back( btVector3( 30, 80, 0) );
-	carPos.push_back( btVector3( 40, 80, 0) );
-	carPos.push_back( btVector3( 50, 90, 0) );
-	carPos.push_back( btVector3( 60, 80, 0) );
-	carPos.push_back( btVector3( 70, 90, 0) );
-	carPos.push_back( btVector3( 80, 90, 0) );
-	carPos.push_back( btVector3( 90, 90, 0) );
-	carPos.push_back( btVector3( 100, 90, 0) );
-	carPos.push_back( btVector3( 110, 90, 0) );
-	carPos.push_back( btVector3( 120, 90, 0) );
-	carPos.push_back( btVector3( 130, 80, 0) );
-	carPos.push_back( btVector3( 140, 70, 0) );
-	carPos.push_back( btVector3( 150, 80, 0) );
-	carPos.push_back( btVector3( 160, 80, 0) );
-	carPos.push_back( btVector3( 170, 80, 0) );
-	carPos.push_back( btVector3( 180, 80, 0) );
-	carPos.push_back( btVector3( 190, 80, 0) );
-	carPos.push_back( btVector3( 200, 80, 0) );
-	carPos.push_back( btVector3( 210, 80, 0) );
-	carPos.push_back( btVector3( 220, 80, 0) );
-	carPos.push_back( btVector3( 230, 80, 0) );
-	carPos.push_back( btVector3( 240, 80, 0) );
-	int j = i/300;
-	if( j < carPos.size())
-		return carPos[j];
-	else
-		return btVector3( 0, 0, 0);
-}
+class createCar;
 
-btVector3 loadManData1(const int i )//位置数据
+//Begin Physics Initialize
+btDynamicsWorld* initPhysics()//Physics Initialize
 {
-	vector< wrapper<btVector3> > manPos;
-	manPos.push_back( btVector3( 35, 20, 0) );
-	manPos.push_back( btVector3( 35, 10, 0) );
-	manPos.push_back( btVector3( 70, 40, 0) );
-	int j = i/300;
-	if( j < manPos.size())
-		return manPos[j];
-	else
-		return btVector3( 0, 0, 0);
-}
+	btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration();
+	btCollisionDispatcher * dispatcher = new btCollisionDispatcher( collisionConfiguration );
+	btConstraintSolver * solver = new btSequentialImpulseConstraintSolver;
 
+	btVector3 worldAabbMin( -10000, -10000, -10000 );
+	btVector3 worldAabbMax( 10000, 10000, 10000 );
+	btBroadphaseInterface * inter = new btAxisSweep3( worldAabbMin, worldAabbMax, 1000 );
+
+	btDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld( dispatcher, inter, solver, collisionConfiguration );
+	dynamicsWorld->setGravity( btVector3( 0, 0, -9.8 ) );
+
+	return( dynamicsWorld );
+}
+//End Initialize
+
+//Begin createTerrain
 osg::MatrixTransform* createTerrain( btDynamicsWorld* dynamicsWorld )
 {
 /*
@@ -153,135 +84,123 @@ osg::MatrixTransform* createTerrain( btDynamicsWorld* dynamicsWorld )
 
 	return ( terrain.release() );
 }
+//End createTerrain
 
-btDynamicsWorld* initPhysics()
+
+btVector3 loadCarData1(const int i )//Position Data
 {
-	btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration();
-	btCollisionDispatcher * dispatcher = new btCollisionDispatcher( collisionConfiguration );
-	btConstraintSolver * solver = new btSequentialImpulseConstraintSolver;
-
-	btVector3 worldAabbMin( -10000, -10000, -10000 );
-	btVector3 worldAabbMax( 10000, 10000, 10000 );
-	btBroadphaseInterface * inter = new btAxisSweep3( worldAabbMin, worldAabbMax, 1000 );
-
-	btDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld( dispatcher, inter, solver, collisionConfiguration );
-	dynamicsWorld->getDispatchInfo().m_allowedCcdPenetration = 0.0001f;
-	dynamicsWorld->setGravity( btVector3( 0, 0, -9.8 ) );
-
-	return dynamicsWorld;
+	vector< wrapper<btVector3> > carPos;
+	carPos.push_back( btVector3( 10, 20, 10) );
+	carPos.push_back( btVector3( 20, 40, -1) );
+	carPos.push_back( btVector3( 30, 50, 1) );
+	carPos.push_back( btVector3( 40, 60, 1) );
+	carPos.push_back( btVector3( 50, 50, 1) );
+	carPos.push_back( btVector3( 60, 30, 1) );
+	carPos.push_back( btVector3( 70, 40, 1) );
+	carPos.push_back( btVector3( 80, 40, 1) );
+	carPos.push_back( btVector3( 90, 50, 1) );
+	carPos.push_back( btVector3( 100, 70, 1) );
+	carPos.push_back( btVector3( 110, 60, 1) );
+	carPos.push_back( btVector3( 120, 70, 1) );
+	carPos.push_back( btVector3( 130, 80, 1) );
+	carPos.push_back( btVector3( 140, 90, 1) );
+	carPos.push_back( btVector3( 150, 101, 1) );
+	carPos.push_back( btVector3( 160, 90, 1) );
+	carPos.push_back( btVector3( 170, 101, 1) );
+	carPos.push_back( btVector3( 180, 101, 1) );
+	carPos.push_back( btVector3( 190, 90, 1) );
+	carPos.push_back( btVector3( 200, 90, 1) );
+	carPos.push_back( btVector3( 210, 90, 1) );
+	carPos.push_back( btVector3( 220, 101, 1) );
+	carPos.push_back( btVector3( 230, 101, 1) );
+	carPos.push_back( btVector3( 240, 101, 1) );
+	int j = i/300;
+	if( j < carPos.size())
+		return carPos[j];
+	else
+		return btVector3( 0, 0, 0);
+}
+btVector3 loadCarData2(const int i )//
+{
+	vector< wrapper<btVector3> > carPos;
+	carPos.push_back( btVector3( 10, 70, 10) );
+	carPos.push_back( btVector3( 20, 80, -1) );
+	carPos.push_back( btVector3( 30, 80, 1) );
+	carPos.push_back( btVector3( 40, 80, 1) );
+	carPos.push_back( btVector3( 50, 90, 1) );
+	carPos.push_back( btVector3( 60, 80, 1) );
+	carPos.push_back( btVector3( 70, 90, 1) );
+	carPos.push_back( btVector3( 80, 90, 1) );
+	carPos.push_back( btVector3( 90, 90, 1) );
+	carPos.push_back( btVector3( 100, 90, 1) );
+	carPos.push_back( btVector3( 110, 90, 1) );
+	carPos.push_back( btVector3( 120, 90, 1) );
+	carPos.push_back( btVector3( 130, 80, 1) );
+	carPos.push_back( btVector3( 140, 70, 1) );
+	carPos.push_back( btVector3( 150, 80, 1) );
+	carPos.push_back( btVector3( 160, 80, 1) );
+	carPos.push_back( btVector3( 170, 80, 1) );
+	carPos.push_back( btVector3( 180, 80, 1) );
+	carPos.push_back( btVector3( 190, 80, 1) );
+	carPos.push_back( btVector3( 200, 80, 1) );
+	carPos.push_back( btVector3( 210, 80, 1) );
+	carPos.push_back( btVector3( 220, 80, 1) );
+	carPos.push_back( btVector3( 230, 80, 1) );
+	carPos.push_back( btVector3( 240, 80, 1) );
+	int j = i/300;
+	if( j < carPos.size())
+		return carPos[j];
+	else
+		return btVector3( 0, 0, 0);
 }
 
-/////////////////////////////////////////////////////////////
-osg::MatrixTransform * createOSGBox( osg::Vec3 size )//创建一个osg的盒子，返回transform
+int main(int argc, char* argv[])
 {
-	osg::Box * box = new osg::Box();//new一个box
-	box->setHalfLengths( size );
-	osg::ShapeDrawable * shape = new osg::ShapeDrawable( box );
-	osg::Geode * geode = new osg::Geode();
-	geode->addDrawable( shape );
-	osg::MatrixTransform * transform = new osg::MatrixTransform();
-	transform->addChild( geode );
-	return( transform );
-}
-
-btRigidBody * createBTBox( osg::MatrixTransform * box,
-	osg::Vec3 center )//返回一个Bullet刚体，用到上面创建的盒子和一个中心
-{
-	btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//从box创建一个碰撞形体
-	osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
-	motion->setTransform( box );
-	motion->setParentTransform( osg::Matrix::translate( center ) );
-	btScalar mass( 0.0 );
-	btVector3 inertia( 0, 0, 0 );//质量和惯性为零，最外围的盒子？
-	btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//创建一个刚体
-	btRigidBody * body = new btRigidBody( rb );
-	return( body );
-}
-
-btRigidBody * createBTBox2( osg::MatrixTransform * box,
-	osg::Vec3 center )//返回一个Bullet刚体，用到上面创建的盒子和一个中心
-{
-	btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//从box创建一个碰撞形体
-
-	osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
-	motion->setTransform( box );
-	motion->setParentTransform( osg::Matrix::translate( center ) );
-
-	btScalar mass( 1.0 );
-	btVector3 inertia( 0, 0, 0 );//质量和惯性为零，最外围的盒子？
-	btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//创建一个刚体
-	btRigidBody * body = new btRigidBody( rb );
-
-	return( body );
-}
-////////////////////////////////////////////////////
-
-int main()
-{
-	int i = 0;
-
-	osg::ref_ptr<osg::Group> root = new osg::Group;
-	btDynamicsWorld* dynamicsWorld = initPhysics();
-
-	osg::MatrixTransform * terrain;
-	btRigidBody * groundBody;
-
-	float thin = .01;//盒子壁的厚度
-	terrain = createOSGBox( osg::Vec3( 500, 500, thin ) );//创建地面，厚度0.01
-	root->addChild( terrain );
-	groundBody = createBTBox( terrain, osg::Vec3( 0, 0, 0 ) );//创建地面的刚体 0质量  第二个参数为center
-	dynamicsWorld->addRigidBody( groundBody );
-
-// 	osg::ref_ptr< osg::MatrixTransform > terrain = createTerrain( dynamicsWorld );
-// 	root->addChild( terrain );
-
-	createCar car;
-	btRigidBody* rbCar = car.getRigidCar();	
-	dynamicsWorld->addRigidBody( rbCar );
-	root->addChild( car.getPosition() );
-	///////////////////////////////////////////////////////////
-	//For Car2
-	createCar car2( btVector3( 10, 0, 2));
-	//car2.setCarInitPos( btVector3( 10, 0, 0));
-	btRigidBody* rbCar2 = car2.getRigidCar();
-	dynamicsWorld->addRigidBody( rbCar2 );
-	root->addChild( car2.getPosition() );
-
-
-	Character* man = new Character(dynamicsWorld);
-	root->addChild(man->getMan());
-	root->addChild(terrain);
-
-	osg::ref_ptr<osgGA::TrackballManipulator> tb = new osgGA::TrackballManipulator();
+	osg::ArgumentParser	arguments( &argc, argv );
+	osgViewer::Viewer	viewer;
+// 	bool flag		= true;
+// 	double headingZ = 0.0;
+	
+	viewer.setUpViewInWindow( 30, 30, 768, 480 );
+	osgGA::TrackballManipulator* tb = new osgGA::TrackballManipulator();
 	tb->setHomePosition( 
 		osg::Vec3( 90, 90, 20),	//osg::Vec3( 10., 10., 0.),
 		osg::Vec3( 0, 0, 0),	//osg::Vec3( 0., 0., 1.),
 		osg::Z_AXIS );	//Camera Position: From eye to center
-	osg::ref_ptr<manController> manCtrl = new manController(man);
-	man->setStartOrigin(btVector3(50,50,20));
-	man->setManualFlag(false);
-	man->setWalkDirection(45,true);
+	viewer.setCameraManipulator( tb );
 
-	osgViewer::Viewer viewer;
-	viewer.setSceneData(root.get());
-	viewer.setCameraManipulator(tb);
-	viewer.addEventHandler(manCtrl);
-	viewer.setUpViewInWindow( 30, 30, 768, 480 );
+	osg::ref_ptr< osg::Group > root = new osg::Group;
+	viewer.setSceneData( root );
+
+	btDynamicsWorld* dynamicsWorld = initPhysics();
+	osg::ref_ptr< osg::MatrixTransform > terrain = createTerrain( dynamicsWorld );
+	root->addChild( terrain );
+
+	createCar car(dynamicsWorld);
+	root->addChild( car.getPosition() );
+///////////////////////////////////////////////////////////
+//For Car2
+	int i = 0;
+	createCar car2(dynamicsWorld, btVector3( 10, 0, 2));
+	//car2.setCarInitPos( btVector3( 10, 0, 0));
+	root->addChild( car2.getPosition() );
+///////////////////////////////////////////////////////////
+
 	viewer.realize();
-	
-	double prevSimTime = 0.;
-	while (!viewer.done())
+
+	//viewer.addEventHandler( new carSwitchController( car.getSwitchNode(), car.getPosition(), car.getRigidCar(), &flag, &headingZ ) );
+ 	double prevSimTime = 0.;
+	while( !viewer.done() )
 	{
 		const double currSimTime = viewer.getFrameStamp()->getSimulationTime();
 		dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
-		prevSimTime = currSimTime;		
+		prevSimTime = currSimTime;
 
-// 		car.setCurrentPos( loadCarData1( i ) );
-// 		car2.setCurrentPos( loadCarData2( i ) );//TO DO Change method to setNextPos
-		man->setNextPos( loadManData1(i));
-		man->updateTrans();
+		car.setCurrentPos( loadCarData1( i ) );
+		car2.setCurrentPos( loadCarData2( i ) );
 		i++;
 		viewer.frame();
+		
 	}
-	return 0;
+	return -1;
 }
