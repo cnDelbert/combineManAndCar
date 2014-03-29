@@ -156,12 +156,11 @@ btVector3 loadCarData2(const int i )//
 
 int main(int argc, char* argv[])
 {
+	int i = 0;
 	osg::ArgumentParser	arguments( &argc, argv );
-	osgViewer::Viewer	viewer;
-// 	bool flag		= true;
-// 	double headingZ = 0.0;
-	
+	osgViewer::Viewer	viewer;	
 	viewer.setUpViewInWindow( 30, 30, 768, 480 );
+	
 	osgGA::TrackballManipulator* tb = new osgGA::TrackballManipulator();
 	tb->setHomePosition( 
 		osg::Vec3( 90, 90, 20),	//osg::Vec3( 10., 10., 0.),
@@ -178,13 +177,8 @@ int main(int argc, char* argv[])
 
 	createCar car(dynamicsWorld);
 	root->addChild( car.getPosition() );
-///////////////////////////////////////////////////////////
-//For Car2
-	int i = 0;
 	createCar car2(dynamicsWorld, btVector3( 10, 0, 2));
-	//car2.setCarInitPos( btVector3( 10, 0, 0));
 	root->addChild( car2.getPosition() );
-///////////////////////////////////////////////////////////
 
 	viewer.realize();
 

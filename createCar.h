@@ -38,12 +38,14 @@ public:
 	btVector3	getCurrentPos();
 	btVector3	getPreviousPos();
 
-	bool	setFont(const std::string& font);
-	void	setCurrentPos(/*const btVector3& currentPos*/);
-	void	setNextPos(const btVector3& nextPos);	//for next position
-	void	setPreviousPos(const btVector3& previousPos);	//for prev position
+	bool setFont(const std::string& font);
+	void setCurrentPos(/*const btVector3& currentPos*/);
+	void setNextPos(const btVector3& nextPos);	//for next position
+	void setPreviousPos(const btVector3& previousPos);	//for prev position
+	void setManualFlag(bool manualFlag = false);
 private:
 	bool	m_updateState;	//更新状态
+	bool	m_manualFlag;
 	float	m_offsetAngle;	//模型默认补偿角 调整到X轴正向
 	float	m_headingAngle;	//从正向开始算的朝向
 	unsigned int	m_frameCount;

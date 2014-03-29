@@ -278,7 +278,7 @@ void Character::initPhysics()
 	m_updateFlag = true;
 	m_interval	= 5000;
 
-	m_walkDirection = btVector3(0.0, 0.0, 0.0);
+	m_walkDirection = btVector3(0.1, 0.0, 0.0);
 	m_walkVelocity = btScalar(1.1) /** 4.0*/; // 4 km/h -> 1.1 m/s
 	m_walkSpeed = m_walkVelocity /60;
 	m_FPS = 60;

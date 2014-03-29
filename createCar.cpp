@@ -65,6 +65,7 @@ void createCar::initCar( )
 	m_updateState	= true;
 	m_offsetAngle	= 90;
 	m_frameCount	= 0;
+	m_manualFlag	= false;
 	m_FPS = 60;
 }
 
@@ -75,22 +76,6 @@ void createCar::carTimer()
 
 void createCar::calcHeadingAngle()
 {
-// 	if( m_previousPos.x() == m_nextPos.x() )
-// 	{
-// 		if ( m_nextPos.y() - m_previousPos.y() > 0 )
-// 		{
-// 			m_headingAngle = osg::PI_2;
-// 		}
-// 		else if ( m_nextPos.y() - m_previousPos.y() < 0 )
-// 		{
-// 			m_headingAngle = -osg::PI_2;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		m_headingAngle = atan(( m_nextPos.y() - m_previousPos.y() ) / (m_nextPos.x() - m_previousPos.x()));
-// 	}
-////////
 	if( m_previousPos.x() == m_nextPos.x() )
 	{
 		if ( m_nextPos.y() - m_previousPos.y() > 0 )
@@ -386,11 +371,18 @@ bool createCar::setFont(const std::string& font)
 	}
 }
 
+void createCar::setPreviousPos(const btVector3& previousPos)
+{
+	m_previousPos.x() = previousPos.x();
+	m_previousPos.y() = previousPos.y();
+	m_previousPos.z() = m_currentPos.z();
+}
+
 void createCar::setCurrentPos(/*const btVector3& currentPos*/)//TODO0.1
 {
 	m_carRotation =  btQuaternion( btVector3( 0, 0, 1), m_headingAngle);
 	m_carTransform.setRotation( m_carRotation );
-
+	m_car
 //	btTransform tempTransform = m_carTransform;
 	m_carTransform.setOrigin( btVector3( m_carTransform.getOrigin().x() + m_stepX,
 		m_carTransform.getOrigin().y() + m_stepY, m_carTransform.getOrigin().z() ) );
@@ -420,7 +412,7 @@ void createCar::setNextPos(const btVector3& nextPos)
 			setPreviousPos(m_nextPos);
 			m_updateState = true;
 		}
-		if( m_previousPos == m_nextPos )
+		if( (m_previousPos.x() == m_nextPos.x())&&(m_previousPos.y() == m_nextPos.y()) )
 		{
 			m_carSwitchStateNode->setValue( 0, false );
 			m_carSwitchStateNode->setValue( 1, true );//Show Static One
@@ -435,29 +427,13 @@ void createCar::setNextPos(const btVector3& nextPos)
 			m_carSwitchStateNode->setValue( 1, false );//Show the Running One
 
 			setCurrentPos();
-			 
-// 			btTransform tempTransform = m_carTransform;
-// 			
-// 			m_carRotation =  btQuaternion( btVector3( 0, 0, 1), m_headingAngle);
-// 			m_carTransform.setRotation( m_carRotation );
-// 			m_carMotionState->setWorldTransform( m_carTransform );
-// 			m_rbCar->setMotionState( m_carMotionState );
-// 
-// 			m_carTransform.setOrigin( btVector3( tempTransform.getOrigin().x() + m_stepX,
-// 				tempTransform.getOrigin().y() + m_stepY, tempTransform.getOrigin().z() ) );
-// 			m_carMotionState->setWorldTransform( m_carTransform );
-// 			m_rbCar->setMotionState( m_carMotionState );
 		}
-// 		if( m_frameCount == 0 )
-// 		{
-// 			m_previousPos = m_nextPos;
-// 			m_updateState = true;
-// 		}
 	}
 }
 
-void createCar::setPreviousPos(const btVector3& previousPos)
+void createCar::setManualFlag(bool manualFlag /* = false */)
 {
-	m_previousPos = previousPos;
+	m_manualFlag = manualFlag;
 }
+
 // End Set Methods //
