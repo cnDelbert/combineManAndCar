@@ -69,9 +69,9 @@ void createCar::initCar( )
 	m_FPS = 60;
 }
 
-void createCar::carTimer()
+void createCar::setIntervalTime(size_t intervalTime /* = 5000 */)
 {
-	m_intervalTime = 5;/*Should be EndTime - BeginTime*/
+	m_intervalTime = intervalTime/1000;/*Should be EndTime - BeginTime*/
 }
 
 void createCar::calcHeadingAngle()
@@ -354,6 +354,11 @@ btVector3 createCar::getPreviousPos()
 	return m_previousPos;
 }
 
+bool createCar::getManualFlag()
+{
+	return m_manualFlag;
+}
+
 // End Get Methods //
 
 // Begin Set Methods //
@@ -373,16 +378,14 @@ bool createCar::setFont(const std::string& font)
 
 void createCar::setPreviousPos(const btVector3& previousPos)
 {
-	m_previousPos.x() = previousPos.x();
-	m_previousPos.y() = previousPos.y();
-	m_previousPos.z() = m_currentPos.z();
+	m_previousPos = btVector3(previousPos.x(), previousPos.y(), m_currentPos.z());
 }
 
 void createCar::setCurrentPos(/*const btVector3& currentPos*/)//TODO0.1
 {
 	m_carRotation =  btQuaternion( btVector3( 0, 0, 1), m_headingAngle);
 	m_carTransform.setRotation( m_carRotation );
-	m_car
+
 //	btTransform tempTransform = m_carTransform;
 	m_carTransform.setOrigin( btVector3( m_carTransform.getOrigin().x() + m_stepX,
 		m_carTransform.getOrigin().y() + m_stepY, m_carTransform.getOrigin().z() ) );
@@ -392,12 +395,15 @@ void createCar::setCurrentPos(/*const btVector3& currentPos*/)//TODO0.1
 
 void createCar::setNextPos(const btVector3& nextPos)
 {
+	if( m_manualFlag )
+		return;
+
 	m_carMotionState = m_rbCar->getMotionState();
 	m_carMotionState->getWorldTransform( m_carTransform );
 
 	if( m_updateState )
 	{
-		carTimer();		
+		setIntervalTime();		
 		m_nextPos	= nextPos;
 		m_frameCount = m_FPS * m_intervalTime;	//60 is FPS
 		m_tempFrameCount = m_frameCount;

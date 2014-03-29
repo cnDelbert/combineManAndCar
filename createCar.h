@@ -38,20 +38,23 @@ public:
 	btVector3	getCurrentPos();
 	btVector3	getPreviousPos();
 
+	bool getManualFlag();
+
 	bool setFont(const std::string& font);
 	void setCurrentPos(/*const btVector3& currentPos*/);
 	void setNextPos(const btVector3& nextPos);	//for next position
 	void setPreviousPos(const btVector3& previousPos);	//for prev position
 	void setManualFlag(bool manualFlag = false);
+	void setIntervalTime(size_t intervalTime = 5000);//ms
 private:
 	bool	m_updateState;	//更新状态
 	bool	m_manualFlag;
 	float	m_offsetAngle;	//模型默认补偿角 调整到X轴正向
-	float	m_headingAngle;	//从正向开始算的朝向
-	unsigned int	m_frameCount;
-	unsigned int	m_tempFrameCount;
-	unsigned int	m_intervalTime;
-	unsigned int	m_FPS;
+	float	m_headingAngle;	//
+	size_t	m_frameCount;
+	size_t	m_tempFrameCount;
+	size_t	m_intervalTime;// in ms
+	size_t	m_FPS;
 	
 	std::string m_font;
 	btRigidBody* m_rbCar;
@@ -74,7 +77,6 @@ private:
  	osg::ref_ptr< osg::MatrixTransform > m_carPosition;
 
 	void initCar();
-	void carTimer();
 	void calcHeadingAngle();
 	void calcStep();//TO DO
 };
