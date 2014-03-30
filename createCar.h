@@ -1,3 +1,5 @@
+#ifndef _CREATECAR_H_
+#define _CREATECAR_H_
 #pragma once
 
 #include <osg/AnimationPath>
@@ -80,4 +82,4 @@ private:
 	void calcHeadingAngle();
 	void calcStep();//TO DO
 };
-
+#endif _CREATECAR_H_

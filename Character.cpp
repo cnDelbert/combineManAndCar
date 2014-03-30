@@ -148,7 +148,8 @@ void Character::updateTrans()
 
 void Character::idle()
 {
-	m_character->reset(m_dynamicsWorld);
+/*	m_character->reset(m_dynamicsWorld);*/
+	m_character->setVelocityForTimeInterval( m_forwardDir, -1);
 }
 
 /********** Set Methods ************/
@@ -189,7 +190,8 @@ void Character::setInterval(btScalar interval/* = 5000*/)
 
 void Character::setNextPos(btVector3& nextPos)
 {
-	setManualFlag(false);
+	if(m_manualFlag)
+		return;
 	if(m_updateFlag)	//updateFlag == true
 	{
 		btVector3 tempPos = m_currTransform.getOrigin();
@@ -198,9 +200,10 @@ void Character::setNextPos(btVector3& nextPos)
 		m_nextTransform.setOrigin( m_nextPos );
 
 		btScalar tempDistance = calcPointsDistance(tempPos, m_nextPos);
-		if(tempDistance < 1)
+		if(tempDistance < 0.0001)
 		{
 			idle();
+			return;
 		}
 		else
 		{
@@ -270,15 +273,16 @@ void Character::initPhysics()
 	m_goRight	= 0;
 	m_goJump	= 0;
 	m_currRot	= 0;
-	m_startOrigin	= btVector3(0, 0, 50);
+	m_startOrigin	= btVector3(0, 0, 10);
 	m_stepHeight	= btScalar(0.45);
 	m_startTransform.setIdentity();
 	m_startTransform.setOrigin( m_startOrigin );
 
 	m_updateFlag = true;
+	m_manualFlag = false;
 	m_interval	= 5000;
 
-	m_walkDirection = btVector3(0.1, 0.0, 0.0);
+	m_walkDirection = btVector3(0, 0, 0);
 	m_walkVelocity = btScalar(1.1) /** 4.0*/; // 4 km/h -> 1.1 m/s
 	m_walkSpeed = m_walkVelocity /60;
 	m_FPS = 60;
@@ -292,10 +296,10 @@ void Character::initCharacter()
 	m_capsule = new osg::Geode;
 	m_man	=	new osg::MatrixTransform;
 
-	m_characterHeight=1.75;//高度
-	m_characterWidth =0.75;//半径
+	m_characterHeight=1.75;//
+	m_characterWidth =0.75;//
 	/***********************/
-	osg::ref_ptr<osg::ShapeDrawable> capsuleShape = new osg::ShapeDrawable(new osg::Capsule(osg::Vec3(0, 0, 0/*0*/), m_characterWidth, m_characterHeight ));
+	osg::ref_ptr<osg::ShapeDrawable> capsuleShape = new osg::ShapeDrawable(new osg::Capsule(osg::Vec3(0, 0, 0), m_characterWidth, m_characterHeight ));
 	m_capsule->addDrawable(capsuleShape);
 	m_man->addChild(m_capsule);
 	/*btConvexShape**/
@@ -329,14 +333,14 @@ void Character::initDirection()
 void Character::goMove()
 {
 	m_currTransform = m_ghostObject->getWorldTransform();
-	if(m_walkSpeed < 0.00001)
+	if(m_walkSpeed < 0.001)
 		idle();
 	else
 		m_character->setWalkDirection(m_walkDirection*m_walkSpeed);
-	btQuaternion tempRot = m_currTransform.getRotation();
-	btVector3 tempTrans = m_currTransform.getOrigin();
-	/*以下内容会造成闪烁 注释掉……*/
-	/*由update来更新*/
+// 	btQuaternion tempRot = m_currTransform.getRotation();
+// 	btVector3 tempTrans = m_currTransform.getOrigin();
+	/* 以下内容会造成闪烁 注释掉……*/
+	/* 由update来更新 */
 	//cout<<tempTrans.x()<<" "<<tempTrans.y()<<" "<< tempTrans.z()<<endl;//当前位置
 	//m_man->setMatrix(osg::Matrix::translate(tempTrans.x(), tempTrans.y(),tempTrans.z()));
 	//m_man->setMatrix(osg::Matrix::rotate(tempRot.getW(), tempRot.getX(), tempRot.getY(), tempRot.getZ()));
@@ -382,8 +386,7 @@ void Character::calcForwardDir()
 btScalar Character::calcPointsDistance(btVector3& src, btVector3& dest)
 {
 	btScalar tempDistance = btSqrt((dest.x()-src.x())*(dest.x()-src.x())
-		+(dest.y()-src.y())*(dest.y()-src.y())
-		/*+(dest.z()-src.z())*(dest.z()-src.z())*/);
+		+(dest.y()-src.y())*(dest.y()-src.y()));
 	return tempDistance;
 }
 /**

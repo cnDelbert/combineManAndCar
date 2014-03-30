@@ -1,3 +1,6 @@
+#ifndef _MANCONTROLLER_H_
+#define _MANCONTROLLER_H_
+
 #pragma once
 #include "Character.h"
 #include <osgGA/GUIEventHandler>
@@ -17,4 +20,4 @@ private:
 	class Character*		m_man;
 	class btGhostObject*	m_ghostObject;
 };
-
+#endif _MANCONTROLLER_H_

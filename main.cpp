@@ -1,8 +1,3 @@
-//解决 vector 问题
-//解决 heading 问题
-//解决 initPos 问题
-//删除carSwitchController即可
-// 20140112
 #include <osgViewer/Viewer>
 #include <osg/MatrixTransform>
 #include <osgDB/ReadFile>
@@ -10,10 +5,13 @@
 
 //#include "carSwitchController.h"
 #include "createCar.h"
+#include "Character.h"
+#include "manController.h"
 
 #include <btBulletDynamicsCommon.h>
 
 #include <vector>
+#include <iostream>
 using namespace std;
 
 template <typename T>
@@ -21,7 +19,7 @@ struct wrapper : public T
 {
 	wrapper() {}
 	wrapper(const T& rhs) : T(rhs) {}
-};//解决 vector C2719 问题
+};//To solve Error:vector C2719
 
 class createCar;
 
@@ -154,13 +152,52 @@ btVector3 loadCarData2(const int i )//
 		return btVector3( 0, 0, 0);
 }
 
+btVector3 loadManData1(const int i )//
+{
+	vector< wrapper<btVector3> > manPos;
+	manPos.push_back( btVector3( 35, 20, 1) );
+	manPos.push_back( btVector3( 35, 20, 0) );
+	manPos.push_back( btVector3( 70, 40, 1) );
+	int j = i/300;
+	if( j < manPos.size())
+		return manPos[j];
+	else
+		return btVector3( 10, 0, 1);
+}
+
+osg::MatrixTransform * createOSGBox( osg::Vec3 size )//return MatrixTransform pointer
+{
+	osg::Box * box = new osg::Box();//new a osg box
+	box->setHalfLengths( size );
+	osg::ShapeDrawable * shape = new osg::ShapeDrawable( box );
+	osg::Geode * geode = new osg::Geode();
+	geode->addDrawable( shape );
+	osg::MatrixTransform * transform = new osg::MatrixTransform();
+	transform->addChild( geode );
+	return( transform );
+}
+
+btRigidBody * createBTBox( osg::MatrixTransform * box,
+	osg::Vec3 center )//return the Bullet with the center as the center of mass
+{
+	btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
+	osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
+	motion->setTransform( box );
+	motion->setParentTransform( osg::Matrix::translate( center ) );
+	btScalar mass( 0.0 );
+	btVector3 inertia( 0, 0, 0 );//
+	btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
+	btRigidBody * body = new btRigidBody( rb );
+	return( body );
+}
+
 int main(int argc, char* argv[])
 {
 	int i = 0;
+	bool terChoice = true;
 	osg::ArgumentParser	arguments( &argc, argv );
 	osgViewer::Viewer	viewer;	
 	viewer.setUpViewInWindow( 30, 30, 768, 480 );
-	
 	osgGA::TrackballManipulator* tb = new osgGA::TrackballManipulator();
 	tb->setHomePosition( 
 		osg::Vec3( 90, 90, 20),	//osg::Vec3( 10., 10., 0.),
@@ -172,17 +209,35 @@ int main(int argc, char* argv[])
 	viewer.setSceneData( root );
 
 	btDynamicsWorld* dynamicsWorld = initPhysics();
-	osg::ref_ptr< osg::MatrixTransform > terrain = createTerrain( dynamicsWorld );
-	root->addChild( terrain );
+	osg::ref_ptr< osg::MatrixTransform > terrain;
+	if(terChoice)
+	{
+		terrain = createTerrain( dynamicsWorld );
+		root->addChild( terrain );
+	}
+	else
+	{
+		btRigidBody* groundBody;
+
+		float thin = .01;//
+		terrain = createOSGBox( osg::Vec3( 500, 500, thin ) );//ground area
+		root->addChild( terrain );
+		groundBody = createBTBox( terrain, osg::Vec3( 0, 0, 0 ) );//make the ground rigid
+		dynamicsWorld->addRigidBody( groundBody );
+	}
+
 
 	createCar car(dynamicsWorld);
 	root->addChild( car.getPosition() );
 	createCar car2(dynamicsWorld, btVector3( 10, 0, 2));
-	root->addChild( car2.getPosition() );
+ 	root->addChild( car2.getPosition() );
+
+	Character* man = new Character(dynamicsWorld);
+	root->addChild(man->getMan());
+
 
 	viewer.realize();
 
-	//viewer.addEventHandler( new carSwitchController( car.getSwitchNode(), car.getPosition(), car.getRigidCar(), &flag, &headingZ ) );
  	double prevSimTime = 0.;
 	while( !viewer.done() )
 	{
@@ -192,6 +247,8 @@ int main(int argc, char* argv[])
 
 		car.setNextPos( loadCarData1( i ) );
 		car2.setNextPos( loadCarData2( i ) );
+		man->setNextPos( loadManData1(i));
+		man->updateTrans();
 		i++;
 		viewer.frame();
 		

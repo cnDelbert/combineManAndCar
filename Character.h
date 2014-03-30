@@ -1,3 +1,5 @@
+#ifndef _CHARACTER_H_
+#define _CHARACTER_H_
 #pragma once
 #include <btBulletDynamicsCommon.h>
 #include <BulletDynamics\Character\btKinematicCharacterController.h>
@@ -151,3 +153,4 @@ private:
 // 	void updateModifierKeys();
 };
 
+#endif _CHARACTER_H_
