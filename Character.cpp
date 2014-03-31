@@ -148,8 +148,8 @@ void Character::updateTrans()
 
 void Character::idle()
 {
-/*	m_character->reset(m_dynamicsWorld);*/
-	m_character->setVelocityForTimeInterval( m_forwardDir, -1);
+	m_character->reset(m_dynamicsWorld);
+/*	m_character->setVelocityForTimeInterval( m_forwardDir, -1);*/
 }
 
 /********** Set Methods ************/
@@ -207,10 +207,9 @@ void Character::setNextPos(btVector3& nextPos)
 		}
 		else
 		{
-			btScalar tempRotation = calcPointsRotation(tempPos, m_nextPos);
-			m_currRot = tempRotation;
+			m_currRot = calcPointsRotation(tempPos, m_nextPos);
 			setWalkVelocity( 3600 * tempDistance / m_interval );
-			setWalkDirection(osg::RadiansToDegrees(tempRotation), true);
+			setWalkDirection(osg::RadiansToDegrees(m_currRot), true);
 			calcForwardDir();
 			m_walkDirection = m_forwardDir;
 			goMove();

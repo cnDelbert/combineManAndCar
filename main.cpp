@@ -156,8 +156,30 @@ btVector3 loadManData1(const int i )//
 {
 	vector< wrapper<btVector3> > manPos;
 	manPos.push_back( btVector3( 35, 20, 1) );
-	manPos.push_back( btVector3( 35, 20, 0) );
+	manPos.push_back( btVector3( 35, 20, 1) );
 	manPos.push_back( btVector3( 70, 40, 1) );
+	manPos.push_back( btVector3( 30, 80, 1) );
+	manPos.push_back( btVector3( 40, 80, 1) );
+	manPos.push_back( btVector3( 50, 90, 1) );
+	manPos.push_back( btVector3( 60, 80, 1) );
+	manPos.push_back( btVector3( 70, 90, 1) );
+	manPos.push_back( btVector3( 80, 90, 1) );
+	manPos.push_back( btVector3( 90, 90, 1) );
+	manPos.push_back( btVector3( 100, 90, 1) );
+	manPos.push_back( btVector3( 110, 90, 1) );
+	manPos.push_back( btVector3( 120, 90, 1) );
+	manPos.push_back( btVector3( 130, 80, 1) );
+	manPos.push_back( btVector3( 140, 70, 1) );
+	manPos.push_back( btVector3( 150, 80, 1) );
+	manPos.push_back( btVector3( 160, 80, 1) );
+	manPos.push_back( btVector3( 170, 80, 1) );
+	manPos.push_back( btVector3( 180, 80, 1) );
+	manPos.push_back( btVector3( 190, 80, 1) );
+	manPos.push_back( btVector3( 200, 80, 1) );
+	manPos.push_back( btVector3( 210, 80, 1) );
+	manPos.push_back( btVector3( 220, 80, 1) );
+	manPos.push_back( btVector3( 230, 80, 1) );
+	manPos.push_back( btVector3( 240, 80, 1) );
 	int j = i/300;
 	if( j < manPos.size())
 		return manPos[j];
