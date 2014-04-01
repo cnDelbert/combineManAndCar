@@ -113,8 +113,8 @@ void createCar::calcHeadingAngle()
 
 void createCar::calcStep()
 {
-	m_stepX = ( m_nextPos.x() - m_previousPos.x() ) / m_tempFrameCount;
-	m_stepY = ( m_nextPos.y() - m_previousPos.y() ) / m_tempFrameCount;
+	m_stepX = ( m_currentPos.x() - m_previousPos.x() ) / m_tempFrameCount;
+	m_stepY = ( m_currentPos.y() - m_previousPos.y() ) / m_tempFrameCount;
 }
 
 createCar::~createCar(void)
@@ -400,6 +400,7 @@ void createCar::setNextPos(const btVector3& nextPos)
 
 	m_carMotionState = m_rbCar->getMotionState();
 	m_carMotionState->getWorldTransform( m_carTransform );
+	m_currentPos = m_carTransform.getOrigin();
 
 	if( m_updateState )
 	{

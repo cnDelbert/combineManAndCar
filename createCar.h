@@ -80,6 +80,7 @@ private:
 
 	void initCar();
 	void calcHeadingAngle();
-	void calcStep();//TO DO
+	void calcStep();
+	void calcPointDistance();//TODO
 };
 #endif _CREATECAR_H_
