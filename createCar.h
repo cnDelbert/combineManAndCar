@@ -49,7 +49,7 @@ public:
 	void setManualFlag(bool manualFlag = false);
 	void setIntervalTime(size_t intervalTime = 5000);//ms
 private:
-	bool	m_updateState;	//更新状态
+	bool	m_updateState;	//
 	bool	m_manualFlag;
 	float	m_offsetAngle;	//模型默认补偿角 调整到X轴正向
 	float	m_headingAngle;	//
