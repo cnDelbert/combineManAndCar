@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 template <typename T>
@@ -215,6 +216,16 @@ btRigidBody * createBTBox( osg::MatrixTransform * box,
 
 int main(int argc, char* argv[])
 {
+	fstream vehicle1;
+	string cars;
+	vehicle1.open("vehicle1.txt", ios::in);
+	if(!vehicle1)
+	{
+		cout<<"Error"<<endl;
+		exit(1);
+	}
+	//vehicle1.getline(cars);
+
 	int i = 0;
 	bool terChoice = true;
 	osg::ArgumentParser	arguments( &argc, argv );
