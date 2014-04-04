@@ -217,15 +217,18 @@ btRigidBody * createBTBox( osg::MatrixTransform * box,
 int main(int argc, char* argv[])
 {
 	fstream vehicle1;
-	string cars;
-	vehicle1.open("vehicle1.txt", ios::in);
+	char cars[600];
+	vehicle1.open("vehicle1.txt");
 	if(!vehicle1)
 	{
 		cout<<"Error"<<endl;
 		exit(1);
 	}
-	//vehicle1.getline(cars);
-
+	while(!vehicle1.eof())
+	{
+		vehicle1.getline(cars);
+		cars->to
+	}
 	int i = 0;
 	bool terChoice = true;
 	osg::ArgumentParser	arguments( &argc, argv );
