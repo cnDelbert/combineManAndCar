@@ -218,6 +218,7 @@ int main(int argc, char* argv[])
 {
 	fstream vehicle1;
 	char cars[600];
+	vector<vector<string>> str;
 	vehicle1.open("vehicle1.txt");
 	if(!vehicle1)
 	{
@@ -226,8 +227,20 @@ int main(int argc, char* argv[])
 	}
 	while(!vehicle1.eof())
 	{
-		vehicle1.getline(cars);
-		cars->to
+		string tempStr;
+		getline(vehicle1, tempStr);
+		int len = tempStr.length();
+		int k = 0;
+		int l = 0;
+		for(int j = 0; j < len; j++)
+		{
+			if(tempStr.c_str()[j] == ',')
+			{
+				for(;k < j; k++)
+				cars = tempStr.c_str()[k]
+		
+			}
+		}
 	}
 	int i = 0;
 	bool terChoice = true;
